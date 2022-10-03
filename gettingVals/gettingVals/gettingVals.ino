@@ -23,9 +23,6 @@ void loop(){
   //nothing for now
   // setUpMpu();
   recordAccelRegisters();
-  recordGyroRegisters();
-  printData();
-  delay(100);
 }
 
 void setUpMpu(){ //in order to establish communication with the mpu, and set up all the registers 
