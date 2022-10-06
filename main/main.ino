@@ -24,6 +24,7 @@ float deltaZ;
 float gyroConverter = 131.0;
 float sum = 0;
 float turnVal = 0;
+int delayTime = 300;
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();
@@ -36,37 +37,44 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   // servoMove(100,30,true);
-  double initialSeconds = micros();
-  prevZ = rotZ;
+  double initialSeconds = micros(); //gets initialSeconds
+  // prevZ = rotZ;  //not required anymore due to different math being used
 
   recordGyroRegisters();
-  // Serial.print("Change in z: ");
-  // Serial.println(deltaZ);
+
   double finalSeconds = micros();
-  double duration = finalSeconds - initialSeconds; // this will be in milliseconds
+  double duration = finalSeconds - initialSeconds ; // this will be in milliseconds
   // rotZ = rotZ * duration; //this only works for constant angular velocity 
   //angular displacement (theta) = integral of angular velocity from initialSeconds to finalSeconds
   float temp = sum;
   // deltaZ = rotZ - prevZ;
   
-  rotZ = rotZ * (duration/1000); //converting duration to seconds and then multipying to get rotation.
+  rotZ = rotZ * (duration/1000 + delayTime/1000); //converting duration to seconds and then multipying to get rotation. //kinda like the rectangle under the curve
   // Serial.println(rotZ);
-  // if(abs(rotZ) > 5){
-      
-  //   sum += rotZ;
+  if(abs(rotZ) > 4){ //eliminating some kind of noise
+    sum += rotZ; //summing all the small rectangles in the curve
+  }
 
+  turnVal = sum - temp; 
+  // if(rotZ < 0){ // sensor turns right, make servo turn that many degress left ->check this function again
+  //   servoMove(servoPos, -floor(turnVal), false); //initially this was -
   // }
-  turnVal = sum - temp;
-  if(rotZ < 0){ // sensor turns right, make servo turn that many degress left ->check this function again
-    servoMove(servoPos, -rotZ, false);
+  // if(rotZ > 0){ // sensor turns right, make servo turn that many degress left 
+  //   servoMove(servoPos, floor(turnVal), true); // this was +
+  // }
+  printData(); //test it with a sure 90
+  if(servoPos > 180){
+    servoPos = 180;
+    Serial.println("Servo max limit reached");
+    myServo.write(servoPos);
   }
-  if(rotZ > 0){ // sensor turns right, make servo turn that many degress left 
-    servoMove(servoPos, rotZ, true);
+  if(servoPos < 0){
+    servoPos = 0;
+    Serial.println("Servo min limit reached");
+    myServo.write(servoPos);
   }
-  printData();
-  
-  delay(100);
-  
+  delay(delayTime);
+  //might need to account for sensor drift
 
 
 }
@@ -112,10 +120,10 @@ void printData(){ //these values will be in degrees per second. Thats why they e
   // Serial.print(rotX);
   // Serial.print("Y= :");
   // Serial.print(rotY);
-  Serial.print("Z= :");
-  Serial.println(rotZ);
-  // Serial.print("turn val ");
-  // Serial.println(turnVal);
+  // Serial.print("Z= :");
+  // Serial.print(rotZ);
+  Serial.print("turn val= ");
+  Serial.println(turnVal);
   // Serial.print("  ");
   // Serial.print("Change in z: ");
   // Serial.println(deltaZ);
