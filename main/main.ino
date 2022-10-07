@@ -25,44 +25,65 @@ float gyroConverter = 131.0;
 float sum = 0;
 float turnVal = 0;
 int delayTime = 300;
+double initialSeconds, finalSeconds, duration;
+float temp;
+int counter;
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();
   Serial.begin(9600); //setting up serial monitor
   setUpMpu();
   myServo.attach(servoPin);
-  myServo.write(servoPos);
+  // myServo.write(servoPos);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   // servoMove(100,30,true);
-  double initialSeconds = micros(); //gets initialSeconds
+  counter ++;
+  initialSeconds = finalSeconds; //gets initialSeconds
   // prevZ = rotZ;  //not required anymore due to different math being used
 
+
+  finalSeconds = millis();
+  duration = (finalSeconds - initialSeconds) / 1000 ; // this will be in milliseconds so divide by 1000 to get millisecods
+  Serial.println(duration);
   recordGyroRegisters();
 
-  double finalSeconds = micros();
-  double duration = finalSeconds - initialSeconds ; // this will be in milliseconds
   // rotZ = rotZ * duration; //this only works for constant angular velocity 
   //angular displacement (theta) = integral of angular velocity from initialSeconds to finalSeconds
-  float temp = sum;
-  // deltaZ = rotZ - prevZ;
+  // if(counter % 20 == 0){
+  //   temp = sum;
+  // }
+  temp = sum;
   
-  rotZ = rotZ * (duration/1000 + delayTime/1000); //converting duration to seconds and then multipying to get rotation. //kinda like the rectangle under the curve
+  // deltaZ = rotZ - prevZ;
+  // Serial.println(temp);
+   //converting duration to seconds and then multipying to get rotation. //kinda like the rectangle under the curve
   // Serial.println(rotZ);
-  if(abs(rotZ) > 4){ //eliminating some kind of noise
-    sum += rotZ; //summing all the small rectangles in the curve
-  }
-
+  // if(abs(rotZ) > 4){ //eliminating some kind of noise
+  //   sum += rotZ; //summing all the small rectangles in the curve
+  // }
+  sum = sum + (rotZ * (duration));
   turnVal = sum - temp; 
+  // if(counter % 100 == 0){
+    // Serial.print("Sum : ");
+    // Serial.print(sum);
+    // Serial.print("Turn Val");
+    // Serial.println(turnVal);
+  
+  // Serial.println(sum);
   // if(rotZ < 0){ // sensor turns right, make servo turn that many degress left ->check this function again
   //   servoMove(servoPos, -floor(turnVal), false); //initially this was -
   // }
   // if(rotZ > 0){ // sensor turns right, make servo turn that many degress left 
   //   servoMove(servoPos, floor(turnVal), true); // this was +
   // }
-  printData(); //test it with a sure 90
+  // Serial.print("SumZ (degrees) ");
+  // Serial.println(sum);
+  // printData(); //test it with a sure 90
+  Serial.print("current sum"); //theoretically the amount of degrees moved
+  Serial.println(sum);
   if(servoPos > 180){
     servoPos = 180;
     Serial.println("Servo max limit reached");
@@ -73,7 +94,7 @@ void loop() {
     Serial.println("Servo min limit reached");
     myServo.write(servoPos);
   }
-  delay(delayTime);
+  // delay(delayTime);
   //might need to account for sensor drift
 
 
@@ -111,6 +132,7 @@ void translateGyroData(){
   rotY = gyroY / gyroConverter;
   rotX = gyroX / gyroConverter;
   rotZ = gyroZ / gyroConverter;
+
 
 }
 void printData(){ //these values will be in degrees per second. Thats why they end up going back to their original values
