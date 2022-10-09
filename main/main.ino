@@ -160,7 +160,7 @@ void printData(){ //these values will be in degrees per second. Thats why they e
   Serial.print("Y= :");
   Serial.print(rotY);
   Serial.print("Z= :");
-  Serial.print(rotZ);
+  Serial.println(rotZ);
   // Serial.print("turn val= ");
   // Serial.println(turnVal);
   // Serial.print("  ");
