@@ -29,7 +29,11 @@ double initialSeconds, finalSeconds, duration;
 float temp;
 int counter;
 float gyroErrorX, gyroErrorY, gyroErrorZ;
+<<<<<<< HEAD
 int offset = 0;
+=======
+
+>>>>>>> 6ff515f8147d677c5f904ae8a55304fdcd46fb79
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();
@@ -40,6 +44,7 @@ void setup() {
   // Serial.println("CAlculating gyro error");
   // calculateGyroError();
   // Serial.println("Finished Calculating gyro error");
+<<<<<<< HEAD
   Serial.println("Offset: ");
   while(Serial.available()==0){}
   offset = Serial.parseInt();
@@ -50,13 +55,18 @@ void setup() {
     if(offset < 0){
       servoMove(servoPos, -offset, false);
   }
+=======
+>>>>>>> 6ff515f8147d677c5f904ae8a55304fdcd46fb79
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   // servoMove(100,30,true);
+<<<<<<< HEAD
   //getting user input for offset
   
+=======
+>>>>>>> 6ff515f8147d677c5f904ae8a55304fdcd46fb79
   counter ++;
   initialSeconds = finalSeconds; //gets initialSeconds
   // prevZ = rotZ;  //not required anymore due to different math being used
@@ -64,6 +74,10 @@ void loop() {
 
   finalSeconds = millis();
   duration = (finalSeconds - initialSeconds) / 1000 ; // this will be in milliseconds so divide by 1000 to get millisecods
+<<<<<<< HEAD
+=======
+  Serial.println(duration);
+>>>>>>> 6ff515f8147d677c5f904ae8a55304fdcd46fb79
   recordGyroRegisters();
 
   // rotZ = rotZ * duration; //this only works for constant angular velocity 
@@ -99,7 +113,11 @@ void loop() {
   }
   // Serial.print("SumZ (degrees) ");
   // Serial.println(sum);
+<<<<<<< HEAD
   // printData(); //test it with a sure 90
+=======
+  printData(); //test it with a sure 90
+>>>>>>> 6ff515f8147d677c5f904ae8a55304fdcd46fb79
   // Serial.print("turn val "); //theoretically the amount of degrees moved
   // Serial.println(turnVal);
   if(servoPos > 180){
